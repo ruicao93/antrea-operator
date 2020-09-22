@@ -11,6 +11,11 @@ all: build
 
 LDFLAGS += $(VERSION_LDFLAGS)
 OPERATOR_NAME = antrea-operator
+SUPPORTED_ANTREA_VERSION = v0.9.1
+
+ifndef ANTREA_VERSION
+        ANTREA_VERSION := SUPPORTED_ANTREA_VERSION
+endif
 
 .PHONY: build
 build:
@@ -34,6 +39,12 @@ test-unit:
 .PHONY: golangci
 golangci: .golangci-bin
 	@GOOS=linux CGO_ENABLED=1 .golangci-bin/golangci-lint run -c .golangci.yml
+
+
+.PHONY: sync-manifest
+sync-manifest:
+	@echo "===> Syncing Antrea manifest <==="
+	$(CURDIR)/build/sync/sync_manifest.sh --version $(ANTREA_VERSION)
 
 .PHONY: clean
 clean:
