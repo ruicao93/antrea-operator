@@ -26,4 +26,7 @@ const (
 	AntreaAgentDaemonSetName       = "antrea-agent"
 	AntreaControllerDeploymentName = "antrea-controller"
 	AntreaConfigMapName            = "antrea-config"
+
+	CNIConfDirRenderKey = "CNIConfDir"
+	CNIBinDirRenderKey  = "CNIBinDir"
 )
