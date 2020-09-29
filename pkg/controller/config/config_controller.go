@@ -118,12 +118,12 @@ func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result
 	}
 
 	// Fetch the Network.operator.openshift.io instance
-	operatorNetwork := &ocoperv1.Network{TypeMeta: metav1.TypeMeta{APIVersion: ocoperv1.GroupVersion.String(), Kind: "Network"}}
-	err = r.client.Get(context.TODO(), request.NamespacedName, operatorNetwork)
+	operatorNetwork := &ocoperv1.Network{}
+	err = r.client.Get(context.TODO(), types.NamespacedName{Name: operatortypes.ClusterOperatorNetworkName}, operatorNetwork)
 	if err != nil {
 		if apierrors.IsNotFound(err) {
-			r.status.SetDegraded(statusmanager.OperatorConfig, "NoOperatorConfig",
-				fmt.Sprintf("Operator configuration %s was deleted", request.NamespacedName.String()))
+			r.status.SetDegraded(statusmanager.OperatorConfig, "NoClusterNetworkOperatorConfig",
+				fmt.Sprintf("Cluster network operator configuration not found"))
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
