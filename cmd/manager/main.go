@@ -98,6 +98,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Setup release version
+	os.Setenv("RELEASE_VERSION", version.Version)
+
 	// Setup all Controllers
 	if err := controller.AddToManager(mgr); err != nil {
 		log.Error(err, "")

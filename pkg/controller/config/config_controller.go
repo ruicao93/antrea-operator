@@ -6,6 +6,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	configv1 "github.com/openshift/api/config/v1"
 	ocoperv1 "github.com/openshift/api/operator/v1"
@@ -116,6 +117,12 @@ func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result
 		log.Error(err, "failed to get Cluster Network CR")
 		return reconcile.Result{Requeue: true}, err
 	}
+	if request.Name == clusterConfig.Name && r.appliedClusterConfig != nil {
+		if reflect.DeepEqual(clusterConfig.Spec, r.appliedClusterConfig.Spec) {
+			log.Info("no configuration change")
+			return reconcile.Result{}, nil
+		}
+	}
 
 	// Fetch the Network.operator.openshift.io instance
 	operatorNetwork := &ocoperv1.Network{}
@@ -145,6 +152,12 @@ func (r *ReconcileConfig) Reconcile(request reconcile.Request) (reconcile.Result
 		r.status.SetDegraded(statusmanager.OperatorConfig, "InvalidAntreaInstallCR",
 			fmt.Sprintf("Failed to get operator CR: %v", err))
 		return reconcile.Result{Requeue: true}, err
+	}
+	if request.Name == operConfig.Name && r.appliedOperConfig != nil {
+		if reflect.DeepEqual(operConfig.Spec, r.appliedOperConfig.Spec) {
+			log.Info("no configuration change")
+			return reconcile.Result{}, nil
+		}
 	}
 
 	// Fill default configurations.

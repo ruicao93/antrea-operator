@@ -28,7 +28,7 @@ import (
 var log = logf.Log.WithName("controller_pod")
 
 // The periodic resync interval.
-// We will re-run the reconciliation logic, even if the NCP configuration
+// We will re-run the reconciliation logic, even if the configuration
 // hasn't changed.
 var ResyncPeriod = 2 * time.Minute
 
@@ -80,11 +80,11 @@ type ReconcilePod struct {
 // Reconcile updates the ClusterOperator.Status to match the current state of the watched Deployments/DaemonSets
 func (r *ReconcilePod) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
-	reqLogger.Info("Reconciling pod update")
 
 	if !r.isAntreaResource(&request) {
 		return reconcile.Result{}, nil
 	}
+	reqLogger.Info("Reconciling pod update")
 	r.status.SetFromPods()
 
 	if err := r.recreateResourceIfNotExist(&request); err != nil {
